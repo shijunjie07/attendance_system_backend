@@ -13,11 +13,7 @@ import numpy as np
 from PIL import Image
 from datetime import datetime
 from facial_fas_recognition.face_recg import FaceRecg
-
 from embd import embeddings
-
-# ignore warnings
-warnings.filterwarnings('ignore')
 
 # init facial recognition
 face_recg = FaceRecg(embeddings)

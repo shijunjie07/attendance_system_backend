@@ -22,7 +22,7 @@ encode = Recognizer().encode
 # generate embeddings for testing
 def _gen_embeddings():
     print("generating embeddings", end='')
-    saved_pictures = "interface_wt_esp32/known_faces/"     # face image folder
+    saved_pictures = "known_faces/"     # face image folder
     all_people_faces = {}
 
     files = os.listdir(saved_pictures)
