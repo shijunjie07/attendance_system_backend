@@ -48,15 +48,16 @@ const int pwmResolution = 8;
 const int ledPin = BUILTIN_LED;
 
 // WiFi config
-const char* ssid = "Alibaba40_2.4GHz@unifi";
-const char* password = "UKM2024JKEES";
+const char* ssid = "your ssid";
+const char* password = "your pwd";
 
 // websocket server ip and port
-const char* server_ip = "192.168.0.104";
+const char* server_ip = "192.168.0.104";    // change to your server ip
 const uint16_t server_port = 5000;
 
 bool stream = false;
 AsyncWebServer server(80);      // listen on port 80
+
 const int camera_id = 1;        // camera id
 const char* location = "DK1";   // camera location
 

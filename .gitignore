@@ -1,1 +1,7 @@
 known_face/
+
+attendance_system_backend/__pycache__/
+
+__pycache__/
+
+attendance_system_backend/esp32_cam_code/__pycache__/
