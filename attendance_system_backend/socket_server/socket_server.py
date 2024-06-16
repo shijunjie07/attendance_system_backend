@@ -5,18 +5,15 @@
 # ---------------------------------------------------
 
 import os
-import io
 import json
 import asyncio
 import websockets
-import numpy as np
-from PIL import Image
 import cv2
-from time import sleep
 import warnings
 import time
 
 from recg import process_image
+from backend_app.backend import db
 
 warnings.filterwarnings('ignore')
 
@@ -65,7 +62,7 @@ async def send_message(websocket, message_queue, image_queue):
         print('total process fps: {}'.format(process_fps))
 
 async def show_stream(image_queue):
-    stream_image_dir = "D:/temp ukm/esp32_stream"       # change to the dir where u want to place the processed image
+    stream_image_dir = "/home/junja/attendance_system_backend/stream"       # change to the dir where u want to place the processed image
     stream_idx = 0
     while True:
         img, msg, data = await image_queue.get()

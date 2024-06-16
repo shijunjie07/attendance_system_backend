@@ -1,7 +1,14 @@
 known_face/
 
 attendance_system_backend/__pycache__/
-
-__pycache__/
+attendance_system_backend/backend_app/__pycache__/
 
 attendance_system_backend/esp32_cam_code/__pycache__/
+__pycache__/
+stream/
+pretrained/
+
+db.sql
+db structure.png
+
+test.py

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32-CAM Monitor</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script>
+        function fetchStatus() {
+            fetch('/status')
+                .then(response => response.json())
+                .then(data => {
+                    let tableBody = document.getElementById('device-status-table-body');
+                    tableBody.innerHTML = '';
+                    for (let ip in data) {
+                        let row = document.createElement('tr');
+                        let ipCell = document.createElement('td');
+                        ipCell.textContent = ip;
+                        let locationCell = document.createElement('td');
+                        locationCell.textContent = data[ip]["location"];
+                        let statusCell = document.createElement('td');
+                        statusCell.textContent = data[ip]["status"];
+                        let actionsCell = document.createElement('td');
+                        let startButton = document.createElement('button');
+                        startButton.className = 'btn btn-success btn-sm';
+                        startButton.textContent = 'Start Stream';
+                        startButton.onclick = function() {
+                            location.href = `/start/${ip}`;
+                        };
+                        let stopButton = document.createElement('button');
+                        stopButton.className = 'btn btn-danger btn-sm';
+                        stopButton.textContent = 'Stop Stream';
+                        stopButton.onclick = function() {
+                            location.href = `/stop/${ip}`;
+                        };
+                        let removeButton = document.createElement('button');
+                        removeButton.className = 'btn btn-warning btn-sm';
+                        removeButton.textContent = 'Remove Device';
+                        removeButton.onclick = function() {
+                            if (confirm(`Are you sure you want to remove the device with IP: ${ip}?`)) {
+                                fetch(`/remove_device/${ip}`, { method: 'POST' })
+                                    .then(() => fetchStatus());
+                            }
+                        };
+                        actionsCell.appendChild(startButton);
+                        actionsCell.appendChild(document.createTextNode(' '));
+                        actionsCell.appendChild(stopButton);
+                        actionsCell.appendChild(document.createTextNode(' '));
+                        actionsCell.appendChild(removeButton);
+                        row.appendChild(ipCell);
+                        row.appendChild(locationCell);
+                        row.appendChild(statusCell);
+                        row.appendChild(actionsCell);
+                        tableBody.appendChild(row);
+                    }
+                })
+                .catch(error => console.error('Error fetching status:', error));
+        }
+
+        function startFetchingStatus() {
+            fetchStatus();
+            setInterval(fetchStatus, 600000);  // 10 minutes in milliseconds
+        }
+
+        function startAllStreams() {
+            location.href = '{{ url_for("start_all") }}';
+        }
+
+        function stopAllStreams() {
+            location.href = '{{ url_for("stop_all") }}';
+        }
+
+        window.onload = startFetchingStatus;
+    </script>
+</head>
+<body class="container">
+    <h1 class="mt-5">Attendance Device Monitor</h1>
+    <div class="mb-3">
+        <button class="btn btn-primary" onclick="startAllStreams()">Start All Streams</button>
+        <button class="btn btn-secondary" onclick="stopAllStreams()">Stop All Streams</button>
+    </div>
+    <div class="mb-3">
+        <form method="post" action="{{ url_for('add_device') }}">
+            <div class="form-row">
+                <div class="col">
+                    <input type="text" class="form-control" name="ip" placeholder="Device IP" required>
+                </div>
+                <div class="col">
+                    <input type="text" class="form-control" name="location" placeholder="Device Location" required>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-success">Add Device</button>
+                </div>
+            </div>
+        </form>
+    </div>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Device IP</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="device-status-table-body">
+        </tbody>
+    </table>
+</body>
+</html>
