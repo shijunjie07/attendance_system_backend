@@ -11,7 +11,18 @@ class Utils:
     
     # h5
     def check_append(dict_to_append:dict) -> tuple[bool, dict]:
-        
+        """_summary_
+
+        Args:
+            dict_to_append (dict): _description_
+
+        Raises:
+            ValueError: _description_
+            ValueError: _description_
+
+        Returns:
+            tuple[bool, dict]: _description_
+        """
         keys = ['id', 'embeddings']
         # check if all keys are in the dictionary
         if not all(key in dict_to_append for key in list(dict_to_append.keys())):
@@ -40,10 +51,26 @@ class Utils:
 
     # embedding tensor to binary
     def convert_tensor_to_binary(embedding_tensor:torch.Tensor):
+        """convert tensor obj to binary
+
+        Args:
+            embedding_tensor (torch.Tensor): _description_
+
+        Returns:
+            bytes: _description_
+        """
         return embedding_tensor.numpy().tobytes()
 
     # binary to embedding tensor
     def convert_binary_to_tensor(embedding_binary):
+        """convert binary to tensor obj
+
+        Args:
+            embedding_binary (_type_): _description_
+
+        Returns:
+            torch.Tensor: _description_
+        """
         embedding_array = np.frombuffer(embedding_binary, dtype=np.float32)
         embedding_tensor = torch.tensor(embedding_array).view(1, -1)
         return embedding_tensor

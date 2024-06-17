@@ -12,7 +12,7 @@ from models import Course, Class, Attendance, Lecturer, \
 
 
 class SQLHandler:
-    
+
     def __init__(self):
         pass
     
@@ -21,6 +21,15 @@ class SQLHandler:
         self, course_code:str, start_time:str,
         end_time:str, location:str, lecturer_id:str,
     ):
+        """inser class
+
+        Args:
+            course_code (str): _description_
+            start_time (str): _description_
+            end_time (str): _description_
+            location (str): _description_
+            lecturer_id (str): _description_
+        """
         start_time = datetime.strptime(start_time, '%Y-%m-%d %H:%M')
         end_time = datetime.strptime(end_time, '%Y-%m-%d %H:%M')
         new_class = Class(
@@ -34,6 +43,12 @@ class SQLHandler:
         db.session.commit()
         
     def insert_course(self, code:str, name:str):
+        """insert course
+
+        Args:
+            code (str): _description_
+            name (str): _description_
+        """
         new_course = Course(code=code, name=name)
         db.session.add(new_course)
         db.session.commit()
@@ -42,6 +57,15 @@ class SQLHandler:
         self, course_code:str, class_id:int,
         student_id:str, record_time:str, status:str
     ):
+        """insert attendance
+
+        Args:
+            course_code (str): _description_
+            class_id (int): _description_
+            student_id (str): _description_
+            record_time (str): _description_
+            status (str): _description_
+        """
         record_time = datetime.strptime(record_time, '%Y-%m-%d %H:%M')
         new_attendance = Attendance(
             course_code=course_code,
@@ -57,6 +81,16 @@ class SQLHandler:
         self, student_id:str, first_name:str,
         last_name:str, phone_number:str, email:str, embedding:bytes
     ):
+        """insert student
+
+        Args:
+            student_id (str): _description_
+            first_name (str): _description_
+            last_name (str): _description_
+            phone_number (str): _description_
+            email (str): _description_
+            embedding (bytes): _description_
+        """
         new_student = Student(
             student_id=student_id,
             first_name=first_name,
@@ -72,6 +106,16 @@ class SQLHandler:
         self, lecturer_id:str, first_name:str,
         last_name:str, phone_number:str, email:str, embedding:bytes
     ):
+        """insert lecturer
+
+        Args:
+            lecturer_id (str): _description_
+            first_name (str): _description_
+            last_name (str): _description_
+            phone_number (str): _description_
+            email (str): _description_
+            embedding (bytes): _description_
+        """
         new_lecturer = Lecturer(
             lecturer_id=lecturer_id,
             first_name=first_name,
@@ -88,6 +132,12 @@ class SQLHandler:
     def add_lecturer_to_course(
         self, course_code:str, lecturer_id:str
     ):
+        """create relationship between lecturer and course
+
+        Args:
+            course_code (str): _description_
+            lecturer_id (str): _description_
+        """
         lecturer_to_course = course_lecturer.insert().values(
             course_code=course_code, lecturer_id=lecturer_id)
         db.session.execute(lecturer_to_course)
@@ -96,6 +146,12 @@ class SQLHandler:
     def add_student_to_course(
         self, course_code:str, student_id:str
     ):
+        """create relationship between student and course
+
+        Args:
+            course_code (str): _description_
+            student_id (str): _description_
+        """
         student_to_course = course_student.insert().values(
             course_code=course_code, student_id=student_id)
         db.session.execute(student_to_course)
@@ -104,11 +160,27 @@ class SQLHandler:
 
     # get
     def get_lecturers_by_course(self, course_code:str):
+        """get lecturers of course
+
+        Args:
+            course_code (str): _description_
+
+        Returns:
+            _type_: _description_
+        """
         course = Course.query.filter_by(code=course_code).first()
         return course.lecturers if course else []
 
     def get_classes(self, by:str, **query_params):
-        # by student, lecturer, date, location
+        """get classes
+
+        Args:
+            by (str): student, lecturer, date, location
+
+        Returns:
+            _type_: _description_
+        """
+
         query = Class.query
         
         if by == 'student':
@@ -137,7 +209,15 @@ class SQLHandler:
         return query.all()
 
     def get_courses(self, by:str, **query_params):
-        # by student, lecturer, date
+        """get courses
+
+        Args:
+            by (str): student, lecturer, date
+
+        Returns:
+            _type_: _description_
+        """
+
         query = Course.query
         
         if by == 'student':
@@ -160,7 +240,14 @@ class SQLHandler:
         return query.all()
     
     def get_attendances(self, by: str, **query_params):
-        # by student, course, class, class_date
+        """get attendances
+
+        Args:
+            by (str): student, course, class, class_date
+
+        Returns:
+            _type_: _description_
+        """
         query = Attendance.query
         
         if by == 'student':
@@ -187,9 +274,18 @@ class SQLHandler:
         return query.all()
     
     def get_student(self, id:str):
+        """get student by id
+
+        Args:
+            id (str): _description_
+
+        Returns:
+            _type_: _description_
+        """
         return Student.query.get(id)
     
     def get_lecturer(self, id:str):
+        """get lecturer by id"""
         return Lecturer.query.get(id)
     
     
