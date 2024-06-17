@@ -54,7 +54,6 @@ class Class(db.Model):
     end_time = db.Column(db.DateTime, nullable=False)
     location = db.Column(db.String(100), nullable=False)
     lecturer_id = db.Column(db.String(10), db.ForeignKey('lecturers.lecturer_id'), nullable=False)
-    # lecturer = db.relationship('Lecturer', backref=db.backref('classes', lazy=True))
 
 class Attendance(db.Model):
     __tablename__ = 'attendance'

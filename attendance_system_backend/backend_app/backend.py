@@ -11,13 +11,13 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template, jsonify, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 
-from models import Course, Class, Attendance, Lecturer, Student, course_student, course_lecturer
 
 from config import Config
 
 app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
+from models import Course, Class, Attendance, Lecturer, Student, course_student, course_lecturer
 
 
 # Initial list of ESP devices with their IPs and locations

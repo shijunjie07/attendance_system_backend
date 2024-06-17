@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 from models import Course, Class, Attendance, Lecturer, \
     Student, course_student, course_lecturer
 
+
 class SQLHandler:
     
     def __init__(self):
@@ -108,7 +109,7 @@ class SQLHandler:
 
     def get_classes(self, by:str, **query_params):
         # by student, lecturer, date, location
-        class_query = Class.query
+        query = Class.query
         
         if by == 'student':
             student_id = query_params.get('student_id')
@@ -170,7 +171,18 @@ class SQLHandler:
         elif by == 'course':
             course_code = query_params.get('course_code')
             if course_code:
-                query = query.filter_by(course_code=course_code)
+                query = query.join(Class).filter(Class.course_code==course_code)
+
+        elif by == 'course_student':
+            course_code = query_params.get('course_code')
+            student_id = query_params.get('student_id')
+            if course_code and student_id:
+                query = query.filter_by(course_code=course_code, student_id=student_id)
+        
+        elif by == 'class':
+            class_id = query_params.get('class_id')
+            if class_id:
+                query = query.filter_by(class_id=class_id)
 
         return query.all()
     
@@ -179,3 +191,5 @@ class SQLHandler:
     
     def get_lecturer(self, id:str):
         return Lecturer.query.get(id)
+    
+    
