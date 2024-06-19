@@ -4,7 +4,7 @@
 # Fri 7 June 2024
 # --------------------------
 
-from backend import db
+from .app import db
 
 # tables for many-to-many relationships
 course_lecturer = db.Table('course_lecturer',

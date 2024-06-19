@@ -5,6 +5,7 @@
 # ---------------------------------
 
 import time
+import asyncio
 import requests
 import threading
 from datetime import datetime, timedelta
@@ -12,13 +13,20 @@ from flask import Flask, render_template, jsonify, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 
 
-from config import Config
+from .app import app, db
+# from .config import Config
 
-app = Flask(__name__)
-app.config.from_object(Config)
-db = SQLAlchemy(app)
-from models import Course, Class, Attendance, Lecturer, Student, course_student, course_lecturer
+# app = Flask(__name__)
+# app.config.from_object(Config)
+# db = SQLAlchemy(app)
 
+from .models import Course, Class, Attendance, Lecturer, Student, course_student, course_lecturer
+
+# from socket_server.server import run_socket_server
+
+
+SOCKET_SERVER_PORT = 3000
+APP_SERVER_PORT = 5001
 
 # Initial list of ESP devices with their IPs and locations
 ESP_DEVICES = [
@@ -196,7 +204,14 @@ def move_class():
     return redirect(url_for('index'))
 
 
-if __name__ == '__main__':
-    status_check_thread = threading.Thread(target=check_device_status, daemon=True)
+def main():
+    print("Start Backend App")
+    status_check_thread = threading.Thread(
+        target=check_device_status, daemon=True)
     status_check_thread.start()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    
+    app.run(debug=True, host='0.0.0.0', port=APP_SERVER_PORT)
+
+
+if __name__ == '__main__':
+    main()

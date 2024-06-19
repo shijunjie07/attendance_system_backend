@@ -1,5 +1,5 @@
 # ---------------------------------------------------
-# http to receive image and send message
+# http to receive image and send message demo
 # @author: Shi Junjie A178915
 # Mon 10 June 2024
 # ---------------------------------------------------
@@ -7,7 +7,7 @@
 import asyncio
 import requests
 
-from socket_server import start_socket_server
+from .server import start_socket_server
 
 ESP_IP = "192.168.0.105"        # change to your ESP ip address
 ESP_PORT = 80

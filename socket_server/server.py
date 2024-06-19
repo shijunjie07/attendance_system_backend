@@ -12,8 +12,8 @@ import cv2
 import warnings
 import time
 
-from recg import process_image
-from backend_app.backend import db
+from .recg import process_image
+from backend_app.app import db
 
 warnings.filterwarnings('ignore')
 
@@ -113,7 +113,12 @@ async def websocket_handler(websocket, path):
         show_stream_task,
     )
 
-async def start_socket_server(port=5000):
+async def start_socket_server(port):
     print('running websocket server on port: {}'.format(port))
     server = await websockets.serve(websocket_handler, '0.0.0.0', port)
     await server.wait_closed()
+    
+def run_socket_server(port):
+    asyncio.run(start_socket_server(port))
+    
+run_socket_server(3000)
