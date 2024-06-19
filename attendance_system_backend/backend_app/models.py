@@ -64,3 +64,8 @@ class Attendance(db.Model):
     record_time = db.Column(db.DateTime, nullable=False)
     status = db.Column(db.String(10), nullable=False)  # 'present', 'late', 'absent', 'excused'
 
+class Device(db.Model):
+    __tablename__ = 'device'
+    ip = db.Column(db.String(15), primary_key=True, unique=True)
+    port = db.Column(db.Integer, nullable=False)
+    location = db.Column(db.String(50), db.ForeignKey('classes.location'), nullable=False, unique=True)

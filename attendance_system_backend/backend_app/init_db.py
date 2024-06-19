@@ -5,11 +5,46 @@
 # --------------------------
 
 from backend import app, db
-from models import Course, Class, Attendance, Lecturer, Student, course_student, course_lecturer
+from models import Course, Class, Attendance, Lecturer, Student, Device, \
+    course_student, course_lecturer
 from datetime import datetime, timedelta
 from utils import Utils
 import torch
 
+devices = {
+    'demo_1': {
+        'ip': '0.0.0.1',
+        'port': 80,
+    },
+    'demo_2': {
+        'ip': '0.0.0.2',
+        'port': 80,
+    },
+    'FKAB DK1': {
+        'ip': '0.0.0.0',
+        'port': 80,
+    },
+    'FKAB DK6': {
+        'ip': '0.0.0.3',
+        'port': 80,
+    },
+    'FKAB DK2': {
+        'ip': '0.0.0.4',
+        'port': 80,
+    },
+    'FKAB BS5': {
+        'ip': '0.0.0.5',
+        'port': 80,
+    },
+    'FKAB BS1': {
+        'ip': '0.0.0.6',
+        'port': 80,
+    },
+    'FKAB ASTMK1': {
+        'ip': '0.0.0.7',
+        'port': 80,
+    },
+}
 
 mock_courses = {
         'KKEE3153': 'System Design',
@@ -210,6 +245,15 @@ def add_mock_data():
                     status='present'
                 )
                 db.session.add(attendance)
+
+    # Add attendance device
+    for location, network in devices.items():
+        device = Device(
+            ip=network['ip'],
+            port=network['port'],
+            location=location,
+        )
+        db.session.add(device)
 
     db.session.commit()
 

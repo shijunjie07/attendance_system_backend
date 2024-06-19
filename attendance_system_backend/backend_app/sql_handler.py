@@ -1,13 +1,12 @@
 # --------------------------------------
 # database handler on insert and query
 # @author: Shi Junjie A178915
-# 16 June June 2024
+# Sun 16 June 2024
 # --------------------------------------
 
 from backend import db
-from typing import Dict
 from datetime import datetime, timedelta
-from models import Course, Class, Attendance, Lecturer, \
+from models import Course, Class, Attendance, Lecturer, Device, \
     Student, course_student, course_lecturer
 
 
@@ -21,7 +20,7 @@ class SQLHandler:
         self, course_code:str, start_time:str,
         end_time:str, location:str, lecturer_id:str,
     ):
-        """inser class
+        """insert class
 
         Args:
             course_code (str): _description_
@@ -127,7 +126,6 @@ class SQLHandler:
         db.session.add(new_lecturer)
         db.session.commit()
 
-
     # add to course
     def add_lecturer_to_course(
         self, course_code:str, lecturer_id:str
@@ -156,7 +154,28 @@ class SQLHandler:
             course_code=course_code, student_id=student_id)
         db.session.execute(student_to_course)
         db.session.commit()
-        
+
+    def insert_device(
+        self, ip:str, port:int, location:str
+    ):
+        """insert attendance device
+
+        Args:
+            ip (str): device ip
+            port (int): port to listen
+            location (str): device classroom location
+
+        Returns:
+            _type_: List | Query
+        """
+        new_device = Device(
+            ip=ip,
+            port=port,
+            location=location,
+        )
+        db.session.add(new_device)
+        db.session.commit()
+
 
     # get
     def get_lecturers_by_course(self, course_code:str):
@@ -166,7 +185,7 @@ class SQLHandler:
             course_code (str): _description_
 
         Returns:
-            _type_: _description_
+            _type_: List | Query
         """
         course = Course.query.filter_by(code=course_code).first()
         return course.lecturers if course else []
@@ -178,7 +197,7 @@ class SQLHandler:
             by (str): student, lecturer, date, location
 
         Returns:
-            _type_: _description_
+            _type_: List | Query
         """
 
         query = Class.query
@@ -215,7 +234,7 @@ class SQLHandler:
             by (str): student, lecturer, date
 
         Returns:
-            _type_: _description_
+            _type_: List | Query
         """
 
         query = Course.query
@@ -246,7 +265,7 @@ class SQLHandler:
             by (str): student, course, class, class_date
 
         Returns:
-            _type_: _description_
+            _type_: List | Query
         """
         query = Attendance.query
         
@@ -280,12 +299,42 @@ class SQLHandler:
             id (str): _description_
 
         Returns:
-            _type_: _description_
+            _type_: Any | None
         """
         return Student.query.get(id)
     
     def get_lecturer(self, id:str):
-        """get lecturer by id"""
+        """get lecturer by id
+
+        Args:
+            id (str): _description_
+
+        Returns:
+            _type_: Any | None
+        """
         return Lecturer.query.get(id)
     
-    
+    def get_device(self, by: str, **query_params):
+        """get device information
+
+        Args:
+            by (str): ip, location
+
+        Returns:
+            _type_: List | Query
+        """
+        query = Device.query
+
+        # by ip
+        if by == 'ip':
+            ip = query_params.get('ip')
+            if ip:
+                query = query.filter_by(ip=ip)
+        
+        # by location
+        elif by == 'location':
+            location = query_params.get('location')
+            if location:
+                query = query.filter_by(location=location)
+        
+        return query.all()
