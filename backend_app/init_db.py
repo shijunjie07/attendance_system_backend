@@ -4,7 +4,7 @@
 # Sat 8 June 2024
 # --------------------------
 
-from .backend import app, db
+from .app import app, db
 from .models import Course, Class, Attendance, Lecturer, Student, Device, \
     course_student, course_lecturer
 from datetime import datetime, timedelta

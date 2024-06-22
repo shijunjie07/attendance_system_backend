@@ -17,6 +17,9 @@ from .app import app, db
 
 from .models import Course, Class, Attendance, Lecturer, Student, course_student, course_lecturer
 
+# from socket_server.server import run_socket_server
+
+
 SOCKET_SERVER_PORT = 3000
 APP_SERVER_PORT = 5001
 
@@ -49,7 +52,6 @@ mock_classes = {
 mock_classes = {}
 
 device_status = {device["ip"]: {"status": "Unknown", "location": device["location"]} for device in ESP_DEVICES}
-
 
 def check_device_status():
     while True:

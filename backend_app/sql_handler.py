@@ -4,7 +4,9 @@
 # Sun 16 June 2024
 # --------------------------------------
 
-from .backend import db
+from functools import wraps
+
+from .app import app, db
 from datetime import datetime, timedelta
 from .models import Course, Class, Attendance, Lecturer, Device, \
     Student, course_student, course_lecturer
@@ -14,8 +16,16 @@ class SQLHandler:
 
     def __init__(self):
         pass
+
+    def with_app_context(func):
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            with app.app_context():
+                return func(self, *args, **kwargs)
+        return wrapper
     
     # insert
+    @with_app_context
     def insert_class(
         self, course_code:str, start_time:str,
         end_time:str, location:str, lecturer_id:str,
@@ -41,6 +51,7 @@ class SQLHandler:
         db.session.add(new_class)
         db.session.commit()
         
+    @with_app_context
     def insert_course(self, code:str, name:str):
         """insert course
 
@@ -52,6 +63,7 @@ class SQLHandler:
         db.session.add(new_course)
         db.session.commit()
     
+    @with_app_context
     def insert_attendance(
         self, course_code:str, class_id:int,
         student_id:str, record_time:str, status:str
@@ -76,6 +88,7 @@ class SQLHandler:
         db.session.add(new_attendance)
         db.session.commit()
     
+    @with_app_context
     def insert_student(
         self, student_id:str, first_name:str,
         last_name:str, phone_number:str, email:str, embedding:bytes
@@ -100,7 +113,8 @@ class SQLHandler:
         )
         db.session.add(new_student)
         db.session.commit()
-    
+
+    @with_app_context
     def insert_lecturer(
         self, lecturer_id:str, first_name:str,
         last_name:str, phone_number:str, email:str, embedding:bytes
@@ -127,6 +141,7 @@ class SQLHandler:
         db.session.commit()
 
     # add to course
+    @with_app_context
     def add_lecturer_to_course(
         self, course_code:str, lecturer_id:str
     ):
@@ -141,6 +156,7 @@ class SQLHandler:
         db.session.execute(lecturer_to_course)
         db.session.commit()
 
+    @with_app_context
     def add_student_to_course(
         self, course_code:str, student_id:str
     ):
@@ -155,6 +171,7 @@ class SQLHandler:
         db.session.execute(student_to_course)
         db.session.commit()
 
+    @with_app_context
     def insert_device(
         self, ip:str, port:int, location:str
     ):
@@ -178,6 +195,7 @@ class SQLHandler:
 
 
     # get
+    @with_app_context
     def get_lecturers_by_course(self, course_code:str):
         """get lecturers of course
 
@@ -190,6 +208,7 @@ class SQLHandler:
         course = Course.query.filter_by(code=course_code).first()
         return course.lecturers if course else []
 
+    @with_app_context
     def get_classes(self, by:str, **query_params):
         """get classes
 
@@ -227,6 +246,7 @@ class SQLHandler:
 
         return query.all()
 
+    @with_app_context
     def get_courses(self, by:str, **query_params):
         """get courses
 
@@ -258,6 +278,7 @@ class SQLHandler:
         
         return query.all()
     
+    @with_app_context
     def get_attendances(self, by: str, **query_params):
         """get attendances
 
@@ -292,6 +313,7 @@ class SQLHandler:
 
         return query.all()
     
+    @with_app_context
     def get_student(self, id:str):
         """get student by id
 
@@ -303,6 +325,7 @@ class SQLHandler:
         """
         return Student.query.get(id)
     
+    @with_app_context
     def get_lecturer(self, id:str):
         """get lecturer by id
 
@@ -314,7 +337,8 @@ class SQLHandler:
         """
         return Lecturer.query.get(id)
     
-    def get_device(self, by: str, **query_params):
+    @with_app_context
+    def get_device(self, by: str=None, all=False, **query_params):
         """get device information
 
         Args:
@@ -324,6 +348,9 @@ class SQLHandler:
             _type_: List | Query
         """
         query = Device.query
+        
+        if all:
+            return query.all()
 
         # by ip
         if by == 'ip':
