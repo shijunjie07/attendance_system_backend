@@ -35,6 +35,7 @@ mock_classes = {
     ],
 }
 
+# mock_classes = {}
 
 # mock_classes = {}
 
@@ -55,11 +56,12 @@ def status():
         ip = device.ip
         location = device.location
         status_with_classes[ip] = device_status[ip]
-        status_with_classes[ip]["classes"] = mock_classes.get(location, [])
+        # status_with_classes[ip]["classes"] = mock_classes.get(location, [])
     return jsonify(status_with_classes)
 
 @app.route('/start/<ip>')
 def start(ip):
+    print('start ip: {}'.format(ip))
     success = start_stream(ip, port=80)
     if success:
         device_status[ip]["status"] = "Stream Started"
