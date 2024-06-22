@@ -6,7 +6,7 @@
 
 from .app import db
 
-# tables for many-to-many relationships
+# # tables for many-to-many relationships
 course_lecturer = db.Table('course_lecturer',
     db.Column('course_code', db.String(10), db.ForeignKey('courses.code'), primary_key=True),
     db.Column('lecturer_id', db.String(10), db.ForeignKey('lecturers.lecturer_id'), primary_key=True)
@@ -16,6 +16,7 @@ course_student = db.Table('course_student',
     db.Column('course_code', db.String(10), db.ForeignKey('courses.code'), primary_key=True),
     db.Column('student_id', db.String(10), db.ForeignKey('students.student_id'), primary_key=True)
 )
+
 
 class Lecturer(db.Model):
     __tablename__ = 'lecturers'

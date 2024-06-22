@@ -13,7 +13,7 @@ import torch
 
 devices = {
     'demo_1': {
-        'ip': '0.0.0.1',
+        'ip': '192.168.0.105',
         'port': 80,
     },
     'demo_2': {
@@ -192,7 +192,7 @@ def add_mock_data():
     for code, name in mock_courses.items():
         course = Course(code=code, name=name)
         db.session.add(course)
-
+        
     # Add lecturers and link to courses
     for lecturer_id, lecturer_data in mock_lecturers.items():
         lecturer = Lecturer(

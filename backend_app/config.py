@@ -7,6 +7,6 @@
 import os
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///attendance_system.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///attendance_system_v0.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = os.urandom(24)
