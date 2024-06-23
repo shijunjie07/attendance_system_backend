@@ -19,18 +19,31 @@ warnings.filterwarnings('ignore')
 
 
 async def receive_message(websocket, message_queue):
+    """listen to message
+
+    Args:
+        websocket (_type_): _description_
+        message_queue (_type_): _description_
+    """
     async for message in websocket:
         # print('received message')
         await message_queue.put(message)
 
 async def send_message(websocket, message_queue, image_queue):
+    """send back message after image processed
+
+    Args:
+        websocket (_type_): _description_
+        message_queue (_type_): _description_
+        image_queue (_type_): _description_
+    """
     receive_last_frame_time = 0.0
     process_last_frame_time = 0.0
     
     while True:
         message = await message_queue.get()
         
-        # calculate receive time interval
+        # calculate receive time interval ------------------------------
         receive_time = time.time()
         receive_diff_time = receive_time - receive_last_frame_time
         receive_last_frame_time = receive_time
@@ -40,9 +53,9 @@ async def send_message(websocket, message_queue, image_queue):
             receive_fps = round(1 / (receive_diff_time), 2)
         print('_______________')
         print('receive fps: {}'.format(receive_fps))
+        # --------------------------------------------------------------
         
         image, processed_message, data = await process_image(message)
-        processed_message_dict = json.loads(processed_message)
         image_info = [image, processed_message, data]
         await image_queue.put(image_info)
         print(processed_message)
@@ -51,7 +64,7 @@ async def send_message(websocket, message_queue, image_queue):
         await websocket.send(processed_message)
         message_queue.task_done()
 
-        # calculate receive time interval
+        # calculate processing time interval ------------------------------
         process_time = time.time()
         process_diff_time = process_time - process_last_frame_time
         process_last_frame_time = process_time
@@ -60,8 +73,14 @@ async def send_message(websocket, message_queue, image_queue):
         else:
             process_fps = round(1 / (process_diff_time), 2)
         print('total process fps: {}'.format(process_fps))
+        # --------------------------------------------------------------
 
 async def show_stream(image_queue):
+    """store image processed to a dir
+
+    Args:
+        image_queue (_type_): _description_
+    """
     stream_image_dir = "/home/junja/attendance_system_backend/stream"       # change to the dir where u want to place the processed image
     stream_idx = 0
     while True:
@@ -99,6 +118,14 @@ async def show_stream(image_queue):
         image_queue.task_done()
     
 async def websocket_handler(websocket, path):
+    """websocket handler
+
+    Args:
+        websocket (_type_): _description_
+        path (_type_): _description_
+    """
+    client_ip, client_port = websocket.remote_address
+    print('[Client Connected] IP: {}, PORT: {}'.format(client_ip, client_port))
     
     message_queue = asyncio.Queue()
     image_queue = asyncio.Queue()
@@ -114,11 +141,16 @@ async def websocket_handler(websocket, path):
     )
 
 async def start_socket_server(port):
+    """start websocket server
+
+    Args:
+        port (_type_): _description_
+    """
     print('running websocket server on port: {}'.format(port))
     server = await websockets.serve(websocket_handler, '0.0.0.0', port)
     await server.wait_closed()
     
 def run_socket_server(port):
     asyncio.run(start_socket_server(port))
-    
-run_socket_server(5000)
+
+# run_socket_server(5000)

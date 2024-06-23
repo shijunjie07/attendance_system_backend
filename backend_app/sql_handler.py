@@ -276,6 +276,11 @@ class SQLHandler:
                 end_of_day = start_of_day + timedelta(days=1)
                 query = query.join(Class).filter(Class.start_time.between(start_of_day, end_of_day))
         
+        elif by == 'code':
+            code = query_params.get('code')
+            if code:
+                query = query.filter_by(code=code)
+
         return query.all()
     
     @with_app_context

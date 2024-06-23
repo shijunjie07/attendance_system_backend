@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ESP32-CAM Monitor</title>
+    <title>Attendance Device Monitor</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script>
         function fetchStatus() {
@@ -51,7 +51,41 @@
                         row.appendChild(locationCell);
                         row.appendChild(statusCell);
                         row.appendChild(actionsCell);
-                        tableBody.appendChild(row);
+
+                        // Add a row for class schedules
+                        if (data[ip]["classes"].length > 0) {
+                            let classRow = document.createElement('tr');
+                            let classCell = document.createElement('td');
+                            classCell.colSpan = 4;
+                            let classTable = document.createElement('table');
+                            classTable.className = 'table table-sm';
+                            let classTableHead = document.createElement('thead');
+                            let classTableHeadRow = document.createElement('tr');
+                            ['Course Code', 'Course Name', 'Start Time', 'End Time'].forEach(text => {
+                                let th = document.createElement('th');
+                                th.textContent = text;
+                                classTableHeadRow.appendChild(th);
+                            });
+                            classTableHead.appendChild(classTableHeadRow);
+                            let classTableBody = document.createElement('tbody');
+                            data[ip]["classes"].forEach(cls => {
+                                let classTableRow = document.createElement('tr');
+                                ['course_code', 'course_name', 'start_time', 'end_time'].forEach(key => {
+                                    let td = document.createElement('td');
+                                    td.textContent = cls[key];
+                                    classTableRow.appendChild(td);
+                                });
+                                classTableBody.appendChild(classTableRow);
+                            });
+                            classTable.appendChild(classTableHead);
+                            classTable.appendChild(classTableBody);
+                            classCell.appendChild(classTable);
+                            classRow.appendChild(classCell);
+                            tableBody.appendChild(row);
+                            tableBody.appendChild(classRow);
+                        } else {
+                            tableBody.appendChild(row);
+                        }
                     }
                 })
                 .catch(error => console.error('Error fetching status:', error));
@@ -79,21 +113,6 @@
         <button class="btn btn-primary" onclick="startAllStreams()">Start All Streams</button>
         <button class="btn btn-secondary" onclick="stopAllStreams()">Stop All Streams</button>
     </div>
-    <div class="mb-3">
-        <form method="post" action="{{ url_for('add_device') }}">
-            <div class="form-row">
-                <div class="col">
-                    <input type="text" class="form-control" name="ip" placeholder="Device IP" required>
-                </div>
-                <div class="col">
-                    <input type="text" class="form-control" name="location" placeholder="Device Location" required>
-                </div>
-                <div class="col">
-                    <button type="submit" class="btn btn-success">Add Device</button>
-                </div>
-            </div>
-        </form>
-    </div>
     <table class="table table-bordered">
         <thead class="thead-dark">
             <tr>
@@ -104,6 +123,44 @@
             </tr>
         </thead>
         <tbody id="device-status-table-body">
+            {% for ip, status_info in device_status.items() %}
+                <tr>
+                    <td>{{ ip }}</td>
+                    <td>{{ status_info.location }}</td>
+                    <td>{{ status_info.status }}</td>
+                    <td>
+                        <button class="btn btn-success btn-sm" onclick="location.href='/start/{{ ip }}'">Start Stream</button>
+                        <button class="btn btn-danger btn-sm" onclick="location.href='/stop/{{ ip }}'">Stop Stream</button>
+                        <button class="btn btn-warning btn-sm" onclick="if (confirm('Are you sure you want to remove the device with IP: {{ ip }}?')) { fetch('/remove_device/{{ ip }}', { method: 'POST' }).then(() => location.reload()); }">Remove Device</button>
+                    </td>
+                </tr>
+                {% if location_classes[status_info.location] %}
+                    <tr>
+                        <td colspan="4">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Course Code</th>
+                                        <th>Course Name</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for cls in location_classes[status_info.location] %}
+                                        <tr>
+                                            <td>{{ cls.course_code }}</td>
+                                            <td>{{ cls.course_name }}</td>
+                                            <td>{{ cls.start_time }}</td>
+                                            <td>{{ cls.end_time }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
         </tbody>
     </table>
 </body>
